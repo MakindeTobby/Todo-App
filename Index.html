@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-do list</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        main {
+            background-color: rgb(136, 45, 255);
+            height: auto;
+            width: 100%;
+            height: 100vh;
+            padding: 50px;
+            margin-top: 200px;
+            margin: 0 auto;
+        }
+
+        .main {
+            height: auto;
+            width: 600px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            margin-top: 50px;
+            background-color: rgb(255, 255, 255);
+            border-radius: 10px 10px 10px;
+            padding: 30px 30px 30px 30px;
+            gap: 10px;
+            box-shadow: 3px 3px 3px rgb(114, 114, 114);
+        }
+
+        .btn {
+            background-color: rgb(136, 45, 255);
+            border: none;
+            border-radius: 4px 4px 4px;
+            height: 40px;
+            width: 40px;
+            color: white;
+            font-size: 35px;
+        }
+
+        .btn2 {
+            background-color: rgb(136, 45, 255);
+            border: none;
+            border-radius: 4px 4px 4px;
+            height: 40px;
+            width: 80px;
+            color: white;
+
+        }
+
+        .btn3 {
+            background-color: rgb(255, 62, 62);
+            border: none;
+            border-radius: 4px 4px 4px;
+            height: 40px;
+            width: 40px;
+            color: white;
+            display: none;
+            font-size: 20px;
+
+
+        }
+
+        .content {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        input {
+            height: 40px;
+            width: 500px;
+            padding: 10px;
+            border-radius: 4px 4px 4px;
+            outline: none;
+            font-size: 15px;
+            box-shadow: inset 4px 4px 4px 4px gainsboro;
+            border: none;
+        }
+
+        .text-part {
+            background-color: rgb(239, 221, 255);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0px 10px 10px;
+            margin-top: 10px;
+            width: 500px;
+            border-radius: 4px 4px 4px;
+            height: 40px;
+            overflow-block: 2px;
+        }
+
+        .text-part:hover .btn3 {
+            display: block;
+        }
+
+        #hr,
+        #min,
+        #sec {
+            position: relative;
+            left: 390px;
+            background-color: rgb(53, 53, 53);
+            color: white;
+            padding: 5px;
+            border-radius: 5px;
+            box-shadow: 4px 4px 4px 4pxb gainsboro;
+        }
+    </style>
+</head>
+
+<body>
+    <main>
+        <div class="main">
+
+            <h1>Todo App</h1>
+            <div id="dtm"><span id="hr"></span></div>
+            <div class="content">
+
+                <input type="text" id="event">
+                <button onclick="add()" class="btn">+</button>
+            </div>
+            <div id="result">
+
+            </div>
+            <div style="display: flex; align-items: center; justify-content: space-between;  width: 540px;">
+                <div> You have <span id="score">0</span> pending task<span id="addS"></span> </div>
+                <button class="btn2" onclick="delAll()">Clear all</button>
+                <!-- <input type="" name="" id=""> -->
+            </div>
+        </div>
+    </main>
+</body>
+
+<script>
+    setInterval(function () {
+        let date = new Date().toLocaleTimeString();
+        // console.log(date)
+        document.getElementById("hr").innerHTML = date;
+
+    }, 1000)
+
+
+    let toDoArr = [];
+
+    let data = JSON.parse(localStorage.getItem("data"))
+    if (data != null) {
+        toDoArr = data
+    }
+
+
+    let event = document.getElementById("event")
+    let result = document.getElementById("result")
+    let sco = document.getElementById("score")
+    let addS = document.getElementById("addS")
+    let add_btn = document.querySelector(".btn")
+
+
+    add_btn.onclick = () => {
+        if (!event.value) {
+            add_btn = null
+        }
+        else {
+            toDoArr.push(event.value)
+            displayResult()
+            event.value = null
+            localStorage.setItem("data", JSON.stringify(toDoArr));
+        }
+        console.log(toDoArr)
+
+
+
+    }
+    function displayResult() {
+        result.innerHTML = " "
+
+        data = JSON.parse(localStorage.getItem("data"))
+        for (let index = 0; index < data.length; index++) {
+            const element = data[index];
+            result.innerHTML += `<div class=" text-part" id="text">
+            <p id="word" contenteditable="true">${element}</p>
+             <button onclick="delOne( ${index})" class="btn3">🗑</button>
+         </div>`;
+            score(data.length)
+        }
+        window.addEventListener("load", displayResult)
+    }
+    function delOne(i) {
+        data.splice(i, 1);
+        localStorage.setItem("data", JSON.stringify(data));
+        displayResult()
+        score(data.length)
+
+    }
+    // function editData() {
+    //     document.getElementById("word").contenteditable = "true"
+
+    // }
+    function score(num) {
+        if (num < 1) {
+            sco.innerHTML = `${0}`
+            addS.innerHTML = ` `
+        }
+        if (num == 1) {
+            sco.innerHTML = `${num}`
+            addS.innerHTML = ` `
+        }
+        if (num > 1) {
+            sco.innerHTML = `${num}`
+            addS.innerHTML = `s`
+        }
+    }
+    function delAll() {
+        data = []
+        localStorage.setItem("data", JSON.stringify(data));
+        displayResult()
+        score(data.length)
+    }
+    window.addEventListener("load", displayResult)
+</script>
